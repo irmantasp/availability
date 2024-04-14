@@ -55,7 +55,8 @@ final class DashboardController extends AbstractDashboardController
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
         yield MenuItem::section('Calendar');
-        yield MenuItem::linkToCrud('Availabilities', 'fas fa-calendar-plus', Availability::class);
+        yield MenuItem::linkToCrud('Availabilities', 'fas fa-calendar-plus', Availability::class)
+        ->setController(AvailabilityController::class);
         yield MenuItem::linkToCrud('Groups', 'fa fa-user-friends', Group::class);
         yield MenuItem::linkToCrud('Events', 'fa fa-calendar-check', Event::class);
         yield MenuItem::section('Users');

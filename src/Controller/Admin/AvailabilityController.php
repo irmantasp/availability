@@ -2,20 +2,21 @@
 
 namespace App\Controller\Admin;
 
+use App\Controller\Admin\Filter\GroupMembersFilter;
 use App\Entity\Availability;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 
-class AvailabilityController extends AbstractAdminController
+final class AvailabilityController extends AbstractAdminController
 {
     public static function getEntityFqcn(): string
     {
         return Availability::class;
     }
 
-    final public function getConfigurableFields(string $pageName): array
+    public function getConfigurableFields(string $pageName): array
     {
         $fields = parent::getConfigurableFields($pageName);
 
@@ -25,15 +26,15 @@ class AvailabilityController extends AbstractAdminController
         $daysField = ArrayField::new('days');
         if (Crud::PAGE_INDEX === $pageName) {
             $daysField
-            ->setLabel('Total days available')
-            ->formatValue(static function ($value) {
+            ->setLabel($this->translator->trans('availability.list.days.label'))
+            ->formatValue(function ($value) {
                 if (is_null($value)) {
                     return null;
                 }
 
                 $total = count($value);
                 if (0 === $total) {
-                    return 'Not available';
+                    return $this->translator->trans('availability.list.days.empty.label');
                 }
 
                 return $total;
@@ -45,12 +46,13 @@ class AvailabilityController extends AbstractAdminController
         return $fields;
     }
 
-    final public function configureFilters(Filters $filters): Filters
+    public function configureFilters(Filters $filters): Filters
     {
         $filters = parent::configureFilters($filters);
 
         return $filters
             ->add('year')
-            ->add('month');
+            ->add('month')
+            ->add(GroupMembersFilter::new('group', 'Group'));
     }
 }

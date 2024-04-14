@@ -8,14 +8,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
-use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
-use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use Symfony\Component\HttpFoundation\Response;
 
 class GroupController extends AbstractAdminController
 {
@@ -74,7 +71,8 @@ class GroupController extends AbstractAdminController
 
         return $filters
             ->add('title')
-            ->add('status');
+            ->add('status')
+            ->add('members');
     }
 
     final public function configureCrud(Crud $crud): Crud
@@ -92,18 +90,41 @@ class GroupController extends AbstractAdminController
 
     final public function configureActions(Actions $actions): Actions
     {
-        $showGroupAvailability = Action::new('showGroupAvailability', 'Show availability', 'fa fa-regular fa-calendar-check')
-            ->linkToCrudAction('groupAvailabilityDetail');
+        $groupAvailability = Action::new(
+            'showGroupAvailability',
+            'Show availabilities',
+        )
+            ->linkToUrl(function (Group $group) {
+                return $this
+                    ->adminUrlGenerator
+                    ->setAction(Action::INDEX)
+                    ->set('filters[group][value][]', $group->getId())
+                    ->set('filters[group][comparison]', '=')
+                    ->generateUrl();
+            });
 
-        $actions->add(Crud::PAGE_INDEX, $showGroupAvailability);
-        $actions->add(Crud::PAGE_DETAIL, $showGroupAvailability);
-        $actions->add(Crud::PAGE_EDIT, $showGroupAvailability);
+        $actions->add(Crud::PAGE_INDEX, $groupAvailability);
+        $actions->add(Crud::PAGE_DETAIL, $groupAvailability);
+        $actions->add(Crud::PAGE_EDIT, $groupAvailability);
+
+        $groupEvents = Action::new(
+            'showGroupEvents',
+            'Show events',
+        )
+            ->linkToUrl(function (Group $group) {
+                return $this
+                    ->adminUrlGenerator
+                    ->setController(EventController::class)
+                    ->setAction(Action::INDEX)
+                    ->set('filters[group][value][]', $group->getId())
+                    ->set('filters[group][comparison]', '=')
+                    ->generateUrl();
+            });
+
+        $actions->add(Crud::PAGE_INDEX, $groupEvents);
+        $actions->add(Crud::PAGE_DETAIL, $groupEvents);
+        $actions->add(Crud::PAGE_EDIT, $groupEvents);
 
         return parent::configureActions($actions);
-    }
-
-    final public function groupAvailabilityDetail(AdminContext $context): KeyValueStore|Response
-    {
-        return new Response('nice');
     }
 }

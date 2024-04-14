@@ -11,14 +11,20 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class AbstractAdminController extends AbstractCrudController
 {
     protected AdminUrlGeneratorInterface $adminUrlGenerator;
 
-    public function __construct(AdminUrlGenerator $adminUrlGenerator)
-    {
+    protected TranslatorInterface $translator;
+
+    public function __construct(
+        AdminUrlGenerator $adminUrlGenerator,
+        TranslatorInterface $translator,
+    ) {
         $this->adminUrlGenerator = $adminUrlGenerator;
+        $this->translator = $translator;
     }
     public function getConfigurableFields(string $pageName): array
     {

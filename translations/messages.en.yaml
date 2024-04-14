@@ -1,0 +1,6 @@
+availability:
+  list:
+    days:
+      label: 'Total days available'
+      empty:
+        label: 'Not available'
