@@ -2,22 +2,20 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\AuthorTrait;
+use App\Entity\Trait\IdentifierTrait;
+use App\Entity\Trait\TimestampedTrait;
 use App\Repository\EventRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class Event implements AuthorInterface, TimestampedEntityInterface
+class Event implements IdentifierInterface, AuthorInterface, TimestampedEntityInterface
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
+    use IdentifierTrait;
+    use TimestampedTrait;
+    use AuthorTrait;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -34,29 +32,6 @@ class Event implements AuthorInterface, TimestampedEntityInterface
 
     #[ORM\Column]
     private ?bool $status = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['default' => 0])]
-    private ?\DateTimeInterface $created = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['default' => 0])]
-    private ?\DateTimeInterface $updated = null;
-
-    final public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    final public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    final public function setUser(?User $user): static
-    {
-        $this->user = $user;
-
-        return $this;
-    }
 
     final public function getUserGroup(): ?Group
     {
@@ -116,43 +91,6 @@ class Event implements AuthorInterface, TimestampedEntityInterface
         $this->status = $status;
 
         return $this;
-    }
-
-
-    final public function getCreated(): ?\DateTimeInterface
-    {
-        return $this->created;
-    }
-
-    final public function setCreated(\DateTimeInterface $created): static
-    {
-        $this->created = $created;
-
-        return $this;
-    }
-
-    final public function getUpdated(): ?\DateTimeInterface
-    {
-        return $this->updated;
-    }
-
-    final public function setUpdated(\DateTimeInterface $updated): static
-    {
-        $this->updated = $updated;
-
-        return $this;
-    }
-
-    #[ORM\PrePersist]
-    final public function setCreatedValue(): void
-    {
-        $this->created = new \DateTime();
-    }
-
-    #[ORM\PreUpdate]
-    final public function setUpdatedValue(): void
-    {
-        $this->updated = new \DateTime();
     }
 
     public function __toString(): string

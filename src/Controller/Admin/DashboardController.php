@@ -47,8 +47,7 @@ final class DashboardController extends AbstractDashboardController
     {
         return Dashboard::new()
             ->setTitle('Availability Administration')
-            ->renderContentMaximized()
-            ->disableDarkMode();
+            ->renderContentMaximized();
     }
 
     public function configureMenuItems(): iterable
