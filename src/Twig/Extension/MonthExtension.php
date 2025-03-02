@@ -24,5 +24,7 @@ final class MonthExtension extends AbstractExtension
 
     public function renderMonth(int $year, int $month, array $days): array
     {
+        $date = new \DateTime(sprintf('%d-%d-%d', $year, $month, 1));
+        
     }
 }
